@@ -21,7 +21,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
     <div className="group bg-card rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <div className="relative h-48 w-full overflow-hidden">
         <Image
-          src={image}
+          src={image || "https://images.unsplash.com/photo-1555992336-03a23c6b0d4c?w=800&q=80"}
           alt={name}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
