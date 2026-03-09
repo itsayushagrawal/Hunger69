@@ -12,6 +12,8 @@ export default function RestaurantPage() {
     const [menuItems, setMenuItems] = useState<any[]>([])
     const [cart, setCart] = useState<any[]>([])
 
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+
     useEffect(() => {
         fetchRestaurant()
         fetchMenuItems()
@@ -118,6 +120,10 @@ export default function RestaurantPage() {
                         </span>
                     </div>
                 ))}
+            </div>
+            <div className="border-t pt-4 mt-4 flex justify-between font-semibold text-lg">
+                <span>Total</span>
+                <span>₹{total}</span>
             </div>
 
         </div>
