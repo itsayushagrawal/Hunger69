@@ -62,6 +62,41 @@ export default function RestaurantPage() {
         })
     }
 
+    async function handleCheckout() {
+        if (cart.length === 0) return
+
+        const { data, error } = await supabase
+            .from("orders")
+            .insert([
+                {
+                    restaurant_id: id,
+                    total_amount: total,
+                    status: "pending",
+                },
+            ])
+            .select()
+            .single()
+
+        if (error) {
+            console.error(error)
+            return
+        }
+
+        const orderId = data.id
+
+        const items = cart.map((item) => ({
+            order_id: orderId,
+            menu_item_id: item.id,
+            quantity: item.quantity,
+            price: item.price,
+        }))
+
+        await supabase.from("order_items").insert(items)
+
+        alert("Order placed!")
+        setCart([])
+    }
+
     if (!restaurant) {
         return <div className="p-10">Loading...</div>
     }
@@ -126,7 +161,10 @@ export default function RestaurantPage() {
                 <span>₹{total}</span>
             </div>
 
-            <button className="w-full bg-green-600 text-white py-3 rounded-lg mt-4 font-medium">
+            <button
+                onClick={handleCheckout}
+                className="w-full bg-green-600 text-white py-3 rounded-lg mt-4 font-medium"
+            >
                 Checkout
             </button>
 
