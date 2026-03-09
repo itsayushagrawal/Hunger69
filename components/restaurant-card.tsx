@@ -1,8 +1,10 @@
 import Image from "next/image"
 import { Star, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface Restaurant {
+  id: string
   name: string
   description: string
   city: string
@@ -18,6 +20,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
   const { name, description, city, image, rating = 4.5 } = restaurant
 
   return (
+    <Link href={`/restaurant/${restaurant.id}`}>
     <div className="group bg-card rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <div className="relative h-48 w-full overflow-hidden">
         <Image
@@ -54,5 +57,6 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
         </Button>
       </div>
     </div>
+    </Link>
   )
 }
