@@ -126,6 +126,10 @@ export default function RestaurantPage() {
                 <span>₹{total}</span>
             </div>
 
+            <button className="w-full bg-green-600 text-white py-3 rounded-lg mt-4 font-medium">
+                Checkout
+            </button>
+
         </div>
     )
 }
