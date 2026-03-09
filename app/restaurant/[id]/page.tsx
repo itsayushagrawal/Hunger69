@@ -45,7 +45,19 @@ export default function RestaurantPage() {
     }
 
     function addToCart(item: any) {
-        setCart((prev) => [...prev, item])
+        setCart((prev) => {
+            const existing = prev.find((i) => i.id === item.id)
+
+            if (existing) {
+                return prev.map((i) =>
+                    i.id === item.id
+                        ? { ...i, quantity: (i.quantity || 1) + 1 }
+                        : i
+                )
+            }
+
+            return [...prev, { ...item, quantity: 1 }]
+        })
     }
 
     if (!restaurant) {
@@ -85,6 +97,25 @@ export default function RestaurantPage() {
                                 Add
                             </button>
                         </div>
+                    </div>
+                ))}
+            </div>
+
+            <h2 className="text-2xl font-semibold mt-10 mb-4">Cart</h2>
+
+            <div className="space-y-3">
+                {cart.map((item, index) => (
+                    <div
+                        key={index}
+                        className="border p-3 rounded-md flex justify-between items-center"
+                    >
+                        <span>
+                            {item.name} x{item.quantity}
+                        </span>
+
+                        <span>
+                            ₹{item.price * item.quantity}
+                        </span>
                     </div>
                 ))}
             </div>
