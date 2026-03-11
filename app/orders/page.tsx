@@ -26,6 +26,11 @@ export default function OrdersPage() {
     }, [])
 
     async function fetchOrders() {
+
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) return
+
         const { data, error } = await supabase
             .from("orders")
             .select(`
@@ -37,6 +42,7 @@ export default function OrdersPage() {
           )
         )
       `)
+            .eq("customer_id", user.id)
             .order("created_at", { ascending: false })
 
         if (error) {

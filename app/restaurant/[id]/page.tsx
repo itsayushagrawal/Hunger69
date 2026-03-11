@@ -65,11 +65,19 @@ export default function RestaurantPage() {
     async function handleCheckout() {
         if (cart.length === 0) return
 
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+        alert("Please login first")
+        return
+        }
+
         const { data, error } = await supabase
             .from("orders")
             .insert([
                 {
                     restaurant_id: id,
+                    customer_id: user.id,
                     total_amount: total,
                     status: "pending",
                 },
