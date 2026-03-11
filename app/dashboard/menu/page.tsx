@@ -11,14 +11,20 @@ export default function MenuDashboard() {
     }, [])
 
     async function fetchMenu() {
+
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) return
+
         const { data, error } = await supabase
-            .from("menu_items")
-            .select(`
+        .from("menu_items")
+        .select(`
         *,
-        restaurants (
-          owner_id
+        restaurants!inner (
+        owner_id
         )
-      `)
+        `)
+        .eq("restaurants.owner_id", user.id)
 
         if (error) {
             console.error(error)
