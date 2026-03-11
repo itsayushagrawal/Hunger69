@@ -32,6 +32,20 @@ export default function Dashboard() {
         }
     }
 
+    async function updateStatus(orderId: string, status: string) {
+        const { error } = await supabase
+            .from("orders")
+            .update({ status })
+            .eq("id", orderId)
+
+        if (error) {
+            console.error(error)
+            return
+        }
+
+        fetchOrders()
+    }
+
     return (
         <div className="p-10">
             <h1 className="text-3xl font-bold mb-6">Restaurant Dashboard</h1>
@@ -51,6 +65,28 @@ export default function Dashboard() {
                             <p className="text-sm text-gray-500">
                                 Status: {order.status}
                             </p>
+                        </div>
+                        <div className="flex gap-2 mt-2">
+                            <button
+                                onClick={() => updateStatus(order.id, "preparing")}
+                                className="bg-yellow-500 text-white px-2 py-1 rounded text-xs"
+                            >
+                                Preparing
+                            </button>
+
+                            <button
+                                onClick={() => updateStatus(order.id, "ready")}
+                                className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                            >
+                                Ready
+                            </button>
+
+                            <button
+                                onClick={() => updateStatus(order.id, "completed")}
+                                className="bg-green-600 text-white px-2 py-1 rounded text-xs"
+                            >
+                                Complete
+                            </button>
                         </div>
 
                         <p className="font-semibold">₹{order.total_amount}</p>
