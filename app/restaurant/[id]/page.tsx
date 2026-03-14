@@ -68,8 +68,8 @@ export default function RestaurantPage() {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-        alert("Please login first")
-        return
+            alert("Please login first")
+            return
         }
 
         const { data, error } = await supabase
@@ -125,16 +125,23 @@ export default function RestaurantPage() {
                 {menuItems.map((item) => (
                     <div
                         key={item.id}
-                        className="border p-4 rounded-lg flex justify-between items-center"
+                        className="border rounded-lg overflow-hidden flex justify-between items-center"
                     >
-                        <div>
+                        {item.image_url && (
+                            <img
+                                src={item.image_url}
+                                alt={item.name}
+                                className="w-24 h-24 object-cover flex-shrink-0"
+                            />
+                        )}
+
+                        <div className="flex-1 p-4">
                             <h3 className="font-medium">{item.name}</h3>
                             <p className="text-sm text-gray-500">{item.description}</p>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 p-4">
                             <span className="font-semibold">₹{item.price}</span>
-
                             <button
                                 onClick={() => addToCart(item)}
                                 className="bg-black text-white px-3 py-1 rounded-md text-sm"

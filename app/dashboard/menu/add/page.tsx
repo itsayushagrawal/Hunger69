@@ -8,6 +8,7 @@ export default function AddMenuItem() {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
+  const [image, setImage] = useState<File | null>(null)
   const router = useRouter()
 
   async function handleAdd() {
@@ -17,6 +18,28 @@ export default function AddMenuItem() {
       alert("Please login")
       return
     }
+
+    let imageUrl = ""
+
+if (image) {
+  const fileName = `${Date.now()}-${image.name}`
+
+  const { error: uploadError } = await supabase.storage
+    .from("menu-images")
+    .upload(fileName, image)
+
+  if (uploadError) {
+    console.error(uploadError)
+    alert("Image upload failed")
+    return
+  }
+
+  const { data } = supabase.storage
+    .from("menu-images")
+    .getPublicUrl(fileName)
+
+  imageUrl = data.publicUrl
+}
 
     const { data: restaurant } = await supabase
       .from("restaurants")
@@ -31,7 +54,8 @@ export default function AddMenuItem() {
           name,
           description,
           price: Number(price),
-          restaurant_id: restaurant?.id
+          restaurant_id: restaurant?.id,
+          image_url: imageUrl
         }
       ])
 
@@ -67,6 +91,12 @@ export default function AddMenuItem() {
         className="border p-2 w-full mb-3"
         value={price}
         onChange={(e) => setPrice(e.target.value)}
+      />
+
+      <input
+        type="file"
+        className="border p-2 w-full mb-3"
+        onChange={(e) => setImage(e.target.files?.[0] || null)}
       />
 
       <button
