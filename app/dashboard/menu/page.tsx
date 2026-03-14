@@ -38,21 +38,39 @@ export default function MenuDashboard() {
 
         if (!user) return
 
+        const { data: restaurant } = await supabase
+            .from("restaurants")
+            .select("id")
+            .eq("owner_id", user.id)
+            .single()
+
+        if (!restaurant) return
+
         const { data, error } = await supabase
             .from("menu_items")
-            .select(`
-            *,
-            restaurants!inner (
-            owner_id
-            )
-            `)
-            .eq("restaurants.owner_id", user.id)
+            .select("*")
+            .eq("restaurant_id", restaurant.id)
 
         if (error) {
             console.error(error)
         } else {
             setMenuItems(data || [])
         }
+    }
+
+    async function deleteMenuItem(itemId: string) {
+        const { error } = await supabase
+            .from("menu_items")
+            .delete()
+            .eq("id", itemId)
+
+        if (error) {
+            console.error(error)
+            alert("Error deleting item")
+            return
+        }
+
+        fetchMenu()
     }
 
     return (
@@ -76,7 +94,15 @@ export default function MenuDashboard() {
                             <p className="text-sm text-gray-500">{item.description}</p>
                         </div>
 
-                        <p className="font-semibold">₹{item.price}</p>
+                        <div className="flex items-center gap-3">
+                            <p className="font-semibold">₹{item.price}</p>
+                            <button
+                                onClick={() => deleteMenuItem(item.id)}
+                                className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>
