@@ -87,6 +87,9 @@ export default function Dashboard() {
                             <p className="text-sm text-gray-500">
                                 Status: {order.status}
                             </p>
+                            <p className="text-sm text-gray-500">
+                                Type: {order.order_type}
+                            </p>
                         </div>
                         <div className="flex gap-2 mt-2">
                             <button

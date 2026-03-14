@@ -70,6 +70,7 @@ export default function OrdersPage() {
                         </div>
 
                         <p className="text-sm">Status: {order.status}</p>
+                        <p className="text-sm">Type: {order.order_type}</p>
 
                         <p className="font-semibold mt-2">₹{order.total_amount}</p>
                     </div>
