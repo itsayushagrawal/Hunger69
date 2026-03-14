@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabase"
 
 export default function MenuDashboard() {
     const [menuItems, setMenuItems] = useState<any[]>([])
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [editData, setEditData] = useState({ name: "", description: "", price: "" })
 
     useEffect(() => {
         checkRole()
@@ -73,6 +75,26 @@ export default function MenuDashboard() {
         fetchMenu()
     }
 
+    async function updateMenuItem(itemId: string) {
+        const { error } = await supabase
+            .from("menu_items")
+            .update({
+                name: editData.name,
+                description: editData.description,
+                price: Number(editData.price)
+            })
+            .eq("id", itemId)
+
+        if (error) {
+            console.error(error)
+            alert("Error updating item")
+            return
+        }
+
+        setEditingId(null)
+        fetchMenu()
+    }
+
     return (
         <div className="p-10">
             <h1 className="text-3xl font-bold mb-6">Menu Management</h1>
@@ -87,22 +109,65 @@ export default function MenuDashboard() {
                 {menuItems.map((item) => (
                     <div
                         key={item.id}
-                        className="border p-4 rounded-lg flex justify-between"
+                        className="border p-4 rounded-lg flex justify-between items-center"
                     >
-                        <div>
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-gray-500">{item.description}</p>
-                        </div>
+                        {editingId === item.id ? (
+                            <div className="flex-1 flex gap-2 items-center">
+                                <input
+                                    className="border p-1 rounded w-32"
+                                    value={editData.name}
+                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                />
+                                <input
+                                    className="border p-1 rounded w-40"
+                                    value={editData.description}
+                                    onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                                />
+                                <input
+                                    className="border p-1 rounded w-20"
+                                    value={editData.price}
+                                    onChange={(e) => setEditData({ ...editData, price: e.target.value })}
+                                />
+                                <button
+                                    onClick={() => updateMenuItem(item.id)}
+                                    className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    onClick={() => setEditingId(null)}
+                                    className="bg-gray-400 text-white px-3 py-1 rounded text-sm"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex-1">
+                                <p className="font-medium">{item.name}</p>
+                                <p className="text-sm text-gray-500">{item.description}</p>
+                            </div>
+                        )}
 
-                        <div className="flex items-center gap-3">
-                            <p className="font-semibold">₹{item.price}</p>
-                            <button
-                                onClick={() => deleteMenuItem(item.id)}
-                                className="bg-red-500 text-white px-3 py-1 rounded text-sm"
-                            >
-                                Delete
-                            </button>
-                        </div>
+                        {editingId !== item.id && (
+                            <div className="flex items-center gap-3">
+                                <p className="font-semibold">₹{item.price}</p>
+                                <button
+                                    onClick={() => {
+                                        setEditingId(item.id)
+                                        setEditData({ name: item.name, description: item.description, price: item.price })
+                                    }}
+                                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => deleteMenuItem(item.id)}
+                                    className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
