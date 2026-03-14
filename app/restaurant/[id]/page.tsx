@@ -11,6 +11,7 @@ export default function RestaurantPage() {
     const [restaurant, setRestaurant] = useState<any>(null)
     const [menuItems, setMenuItems] = useState<any[]>([])
     const [cart, setCart] = useState<any[]>([])
+    const [orderType, setOrderType] = useState("pickup")
 
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
@@ -81,13 +82,14 @@ export default function RestaurantPage() {
                     customer_id: user.id,
                     total_amount: total,
                     status: "pending",
+                    order_type: orderType,
                 },
             ])
             .select()
             .single()
 
         if (error) {
-            console.error(error)
+            console.error("Order error:", JSON.stringify(error))
             return
         }
 
@@ -154,6 +156,27 @@ export default function RestaurantPage() {
                 ))}
             </div>
 
+            <h2 className="text-2xl font-semibold mt-10 mb-4">Order Type</h2>
+            <div className="flex gap-3">
+                <button
+                    onClick={() => setOrderType("dine_in")}
+                    className={`px-4 py-2 rounded border ${orderType === "dine_in" ? "bg-black text-white" : ""}`}
+                >
+                    Dine In
+                </button>
+                <button
+                    onClick={() => setOrderType("pickup")}
+                    className={`px-4 py-2 rounded border ${orderType === "pickup" ? "bg-black text-white" : ""}`}
+                >
+                    Pickup
+                </button>
+                <button
+                    onClick={() => setOrderType("delivery")}
+                    className={`px-4 py-2 rounded border ${orderType === "delivery" ? "bg-black text-white" : ""}`}
+                >
+                    Delivery
+                </button>
+            </div>
             <h2 className="text-2xl font-semibold mt-10 mb-4">Cart</h2>
 
             <div className="space-y-3">
