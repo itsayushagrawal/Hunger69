@@ -38,6 +38,7 @@ export default function RestaurantPage() {
             .from("menu_items")
             .select("*")
             .eq("restaurant_id", id)
+            .eq("is_available", true)
 
         if (error) {
             console.error(error)

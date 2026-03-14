@@ -95,6 +95,20 @@ export default function MenuDashboard() {
         fetchMenu()
     }
 
+    async function toggleAvailability(itemId: string, current: boolean) {
+        const { error } = await supabase
+            .from("menu_items")
+            .update({ is_available: !current })
+            .eq("id", itemId)
+
+        if (error) {
+            console.error(error)
+            return
+        }
+
+        fetchMenu()
+    }
+
     return (
         <div className="p-10">
             <h1 className="text-3xl font-bold mb-6">Menu Management</h1>
@@ -165,6 +179,14 @@ export default function MenuDashboard() {
                                     className="bg-red-500 text-white px-3 py-1 rounded text-sm"
                                 >
                                     Delete
+                                </button>
+
+                                <button
+                                    onClick={() => toggleAvailability(item.id, item.is_available)}
+                                    className={`px-3 py-1 rounded text-sm text-white ${item.is_available ? "bg-gray-500" : "bg-green-600"
+                                        }`}
+                                >
+                                    {item.is_available ? "Hide" : "Show"}
                                 </button>
                             </div>
                         )}
