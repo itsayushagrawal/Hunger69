@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
@@ -10,6 +10,31 @@ export default function AddMenuItem() {
   const [price, setPrice] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    checkRole()
+  }, [])
+
+  async function checkRole() {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      window.location.href = "/restaurant-login"
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single()
+
+    if (profile?.role !== "restaurant") {
+      alert("Access denied. Restaurant owners only.")
+      window.location.href = "/"
+      return
+    }
+  }
 
   async function handleAdd() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -21,25 +46,25 @@ export default function AddMenuItem() {
 
     let imageUrl = ""
 
-if (image) {
-  const fileName = `${Date.now()}-${image.name}`
+    if (image) {
+      const fileName = `${Date.now()}-${image.name}`
 
-  const { error: uploadError } = await supabase.storage
-    .from("menu-images")
-    .upload(fileName, image)
+      const { error: uploadError } = await supabase.storage
+        .from("menu-images")
+        .upload(fileName, image)
 
-  if (uploadError) {
-    console.error(uploadError)
-    alert("Image upload failed")
-    return
-  }
+      if (uploadError) {
+        console.error(uploadError)
+        alert("Image upload failed")
+        return
+      }
 
-  const { data } = supabase.storage
-    .from("menu-images")
-    .getPublicUrl(fileName)
+      const { data } = supabase.storage
+        .from("menu-images")
+        .getPublicUrl(fileName)
 
-  imageUrl = data.publicUrl
-}
+      imageUrl = data.publicUrl
+    }
 
     const { data: restaurant } = await supabase
       .from("restaurants")

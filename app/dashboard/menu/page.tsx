@@ -7,24 +7,46 @@ export default function MenuDashboard() {
     const [menuItems, setMenuItems] = useState<any[]>([])
 
     useEffect(() => {
-        fetchMenu()
+        checkRole()
     }, [])
 
-    async function fetchMenu() {
+    async function checkRole() {
+        const { data: { user } } = await supabase.auth.getUser()
 
+        if (!user) {
+            window.location.href = "/restaurant-login"
+            return
+        }
+
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single()
+
+        if (profile?.role !== "restaurant") {
+            alert("Access denied. Restaurant owners only.")
+            window.location.href = "/"
+            return
+        }
+
+        fetchMenu()
+    }
+
+    async function fetchMenu() {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) return
 
         const { data, error } = await supabase
-        .from("menu_items")
-        .select(`
-        *,
-        restaurants!inner (
-        owner_id
-        )
-        `)
-        .eq("restaurants.owner_id", user.id)
+            .from("menu_items")
+            .select(`
+            *,
+            restaurants!inner (
+            owner_id
+            )
+            `)
+            .eq("restaurants.owner_id", user.id)
 
         if (error) {
             console.error(error)
