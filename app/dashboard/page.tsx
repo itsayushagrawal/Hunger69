@@ -7,9 +7,31 @@ export default function Dashboard() {
     const [orders, setOrders] = useState<any[]>([])
 
     useEffect(() => {
-        fetchOrders()
+        checkRole()
     }, [])
 
+    async function checkRole() {
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            window.location.href = "/restaurant-login"
+            return
+        }
+
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single()
+
+        if (profile?.role !== "restaurant") {
+            alert("Access denied. Restaurant owners only.")
+            window.location.href = "/"
+            return
+        }
+
+        fetchOrders()
+    }
     async function fetchOrders() {
         const { data, error } = await supabase
             .from("orders")

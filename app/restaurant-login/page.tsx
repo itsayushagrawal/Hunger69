@@ -22,18 +22,24 @@ export default function RestaurantLogin() {
     }
   }
 
-  async function handleSignup() {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
+async function handleSignup() {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
 
-    if (error) {
-      alert(error.message)
-    } else {
-      alert("Restaurant account created. You can now login.")
-    }
+  if (error) {
+    alert(error.message)
+    return
   }
+
+  await supabase.from("profiles").insert([{
+    id: data.user?.id,
+    role: "restaurant"
+  }])
+
+  alert("Restaurant account created. You can now login.")
+}
 
   return (
     <div className="p-10 max-w-md mx-auto">

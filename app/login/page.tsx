@@ -49,16 +49,22 @@ export default function LoginPage() {
 
             <button
                 onClick={async () => {
-                    const { error } = await supabase.auth.signUp({
+                    const { data, error } = await supabase.auth.signUp({
                         email,
                         password,
                     })
 
                     if (error) {
                         alert(error.message)
-                    } else {
-                        alert("Account created! You can now login.")
+                        return
                     }
+
+                    await supabase.from("profiles").insert([{
+                        id: data.user?.id,
+                        role: "customer"
+                    }])
+
+                    alert("Account created! You can now login.")
                 }}
                 className="bg-gray-700 text-white px-4 py-2 w-full rounded mt-3"
             >
