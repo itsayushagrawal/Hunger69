@@ -18,7 +18,7 @@ export default function RestaurantLogin() {
     if (error) {
       alert(error.message)
     } else {
-      router.push("/dashboard")
+      window.location.href = "/dashboard"
     }
   }
 

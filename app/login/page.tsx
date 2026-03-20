@@ -7,18 +7,31 @@ export default function LoginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    async function handleLogin() {
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
+async function handleLogin() {
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    })
 
-        if (error) {
-            alert(error.message)
-        } else {
-            alert("Logged in!")
-        }
+    if (error) {
+        alert(error.message)
+        return
     }
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user!.id)
+        .single()
+
+    if (profile?.role === "restaurant") {
+        window.location.href = "/dashboard"
+    } else {
+        window.location.href = "/"
+    }
+}
 
     return (
         <div className="p-10 max-w-md mx-auto">
