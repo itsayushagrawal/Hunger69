@@ -23,22 +23,22 @@ export default function RestaurantLogin() {
   }
 
 async function handleSignup() {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  })
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+    })
 
-  if (error) {
-    alert(error.message)
-    return
-  }
+    if (error) {
+        alert(error.message)
+        return
+    }
 
-  await supabase.from("profiles").insert([{
+await supabase.from("profiles").upsert([{
     id: data.user?.id,
     role: "restaurant"
-  }])
+}])
 
-  alert("Restaurant account created. You can now login.")
+    window.location.href = "/create-restaurant"
 }
 
   return (

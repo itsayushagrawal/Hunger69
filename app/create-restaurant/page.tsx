@@ -34,7 +34,7 @@ export default function CreateRestaurant() {
       alert("Error creating restaurant")
     } else {
       alert("Restaurant created!")
-      router.push("/")
+      router.push("/dashboard/menu/add")
     }
   }
 
